@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<flow name="create-user-flow" doc:id="64dcd457-08eb-4cbc-9c9c-260d263b70a3" >
+		<logger level="INFO" doc:name="LOG INFO create customer system api flow started" doc:id="5ac9eb6f-7b56-4e7b-9b65-013b4752234a" message='#["create-customer-flow|ecomm-user-sys-api started"]'/>
+		<ee:transform doc:name="Transform Message" doc:id="b3647d7c-bad2-46c8-a218-6e4986fab11f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	firstname: payload.firstName,
+	lastname: payload.lastName default "",
+	phoneNumber: payload.phoneNumber as String,
+	email: payload.email default null,
+	deliveryAddress: payload.deliveryAddress default ""
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:insert doc:name="INSERT customer data to database" doc:id="374a0210-d608-48e0-a0db-492d961a64b7" config-ref="Database_Config" autoGenerateKeys="true">
+			<db:sql ><![CDATA[INSERT INTO `customer`
+(
+`first_name`,
+`last_name`,
+`phone_number`,
+`email_ID`,
+`delivery_address`)
+VALUES
+(
+:firstname,
+:lastname,
+:phonenumber,
+:email,
+:deliveryaddress);
+
+]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{'firstname': payload.firstname, 'lastname': payload.lastname, 'phonenumber': payload.phoneNumber, 
+'email': payload.email, 'deliveryaddress': payload.deliveryAddress}]]]></db:input-parameters>
+			<db:auto-generated-keys-column-indexes >
+				<db:auto-generated-keys-column-index value="1" />
+			</db:auto-generated-keys-column-indexes>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="cf9efc87-b570-4f04-87c3-9c0c536ad163" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"customerId" : payload.generatedKeys[0]
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="LOG INFO customer created sucess " doc:id="4876d325-3374-4b27-af83-ea8c3cfb926a" message='#["create-customer-flow|ecomm-user-sys-api completed"]'/>
+	</flow>
+	<sub-flow name="check-customer-id" doc:id="75632160-0763-42de-a991-c31b478b3eee" >
+		<validation:is-number numberType="INTEGER" doc:name="check if customer id is number" doc:id="32c6b44f-168c-4115-8cab-acf06b86d6ae" config-ref="Validation_Config" value="#[attributes.uriParams.customerId]"/>
+	</sub-flow>
+	<flow name="get-customer-flow" doc:id="bc822dc3-dd51-4804-9a49-cf78f1f6eb3d" >
+		<flow-ref doc:name="validate customer id" doc:id="60771665-0be9-4c40-9676-24179c9e3385" name="check-customer-id"/>
+		<logger level="INFO" doc:name="LOG INFO get customer details by ID" doc:id="84f6718f-f9da-423e-8ca5-9beabd8246ea" message='#["get-customer-flow|ecomm-user-sys-api started"]'/>
+		<db:select doc:name="get customer by ID" doc:id="f97a27c4-eb55-4c91-8ff0-9afad629974d" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from customer where customer_id = :customerid]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	customerid : attributes.uriParams.customerId
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="951d0c66-9237-4ef4-96fe-b4ce83b9e24f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="LOG INFO customer info retrieved successfully" doc:id="9b796f73-a2b1-49c3-bf3e-dcbdc5334cdc" message='#["get-customer-flow|ecomm-user-sys-api completed"]'/>
+	</flow>
+	<flow name="update-customer-flow" doc:id="2c00e0f7-031e-4317-a4c8-25a38877b7b9" >
+		<flow-ref doc:name="validate customer id" doc:id="d5c56cdb-1157-43fa-a0e8-750fed3c03f1" name="check-customer-id" />
+		<logger level="INFO" doc:name="LOG INFO update customer details by ID" doc:id="118fa4a2-5135-44bc-b719-070b0280989d" message='#["update-customer-flow|ecomm-user-sys-api started"]'/>
+		<ee:transform doc:name="Transform Message" doc:id="b5ca11c0-ad53-4758-847e-d84924152116" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:update doc:name="get customer by ID" doc:id="a2da8d84-c416-4bf0-825a-e4010b7c605f" config-ref="Database_Config">
+			<db:sql ><![CDATA[UPDATE customer SET
+`first_name` = :firstname,
+`last_name` = :lastname,
+`phone_number` = :phonenumber,
+`delivery_address` = :deliveryaddress,
+`email_id` = :email
+WHERE `customer_id` = :customer_id;
+]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{'customer_id' : attributes.uriParams.customerId,
+'firstname': payload.firstName, 
+'lastname': payload.lastName, 
+'phonenumber': payload.phoneNumber, 
+'email': payload.email,
+'deliveryaddress': payload.deliveryAddress
+}]]]></db:input-parameters>
+		</db:update>
+		<ee:transform doc:name="Transform Message" doc:id="2a3f77f1-8c43-4b6c-b1b9-d2f00f37da13" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "customer details updated"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="LOG INFO update customer details by ID success" doc:id="76eb165d-e4bf-4671-9bce-92aa040ff66c" message='#["update-customer-flow|ecomm-user-sys-api complete"]'/>
+	</flow>
+	<flow name="delete-customer-flow" doc:id="08453303-f301-4d4d-8e17-b906f0811427" >
+		<logger level="INFO" doc:name="LOG INFO delete customer details by ID" doc:id="ca7d1aa7-ecc9-4580-ad13-1fd549818252" message='#["delete-customer-flow|ecomm-user-sys-api started"]'/>
+		<flow-ref doc:name="validate customer id" doc:id="daf1a94f-f8d0-44ea-a3d9-98aaa0b1d15c" name="check-customer-id" />
+		<db:delete doc:name="get customer by ID" doc:id="c3ada2bc-1beb-4653-ae01-cda324082504" config-ref="Database_Config">
+			<db:sql ><![CDATA[delete from customer where customer_id = :customerid]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	customerid : attributes.uriParams.customerId
+}]]]></db:input-parameters>
+		</db:delete>
+		<ee:transform doc:name="Transform Message" doc:id="1fe84f65-cc3f-46ea-9f2e-36c807f627cb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : "successful in deleting customer details"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="LOG INFO delete customer details by ID success" doc:id="b592994a-d83a-41f9-9bce-5b777b62b146" message='#["delete-customer-flow|ecomm-user-sys-api complete"]'/>
+	</flow>
+</mule>
