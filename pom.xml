@@ -34,20 +34,14 @@
 				<configuration>
 					<cloudHubDeployment>
 						<uri>https://anypoint.mulesoft.com</uri>
-						<muleVersion>4.4.0</muleVersion>
-						<username>rahul976</username>
-						<password>Anderson123@</password>
-						<applicationName>ecomm-experience-api</applicationName>
-						<environment>Sandbox</environment>
-						<region>us-east-1</region>
+						<muleVersion>${muleVersion}</muleVersion>
+						<username>${username}</username>
+						<password>${password}</password>
+						<applicationName>${applicationName}</applicationName>
+						<environment>${environment}</environment>
+						<workers>${workers}</workers>
+						<workerType>${workerType}</workerType>
 						<objectStoreV2>true</objectStoreV2>
-						<workers>1</workers>
-						<workerType>MICRO</workerType>
-						<properties>
-							<anypoint.platform.client_id>5077ab7fb2f441bfaa39ed9b59a98f7c</anypoint.platform.client_id>
-							<anypoint.platform.client_secret>E184718678F5449FA4c5162d7AB4C5E6</anypoint.platform.client_secret>
-							<key>value</key>
-						</properties>
 					</cloudHubDeployment>
 					<sharedLibraries>
 						<sharedLibrary>
