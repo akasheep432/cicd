@@ -16,5 +16,6 @@
 	<classpathentry kind="src" output="target/test-classes" path="src/test/resources"/>
 	<classpathentry kind="src" path="src/test/munit"/>
 	<classpathentry exported="true" kind="con" path="MULE_RUNTIME/org.mule.tooling.server.4.4.0.ee"/>
+	<classpathentry kind="lib" path="C:/Users/akashdeepkvasistha/Downloads/ojdbc6/ojdbc6/0.1/ojdbc6-0.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
