@@ -6,7 +6,7 @@
   ],
   "secureProperties": [],
   "redeploymentEnabled": true,
-  "name": "abd21fd4-08d3-451c-830a-d7030cdf69c5:user_sysapi:1.0.0",
+  "name": "abd21fd4-08d3-451c-830a-d7030cdf69c5:user_sysapi1:1.0.0",
   "minMuleVersion": "4.4.0",
   "requiredProduct": "MULE_EE",
   "classLoaderModelLoaderDescriptor": {

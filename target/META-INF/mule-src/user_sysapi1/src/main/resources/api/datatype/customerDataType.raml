@@ -1,0 +1,15 @@
+#%RAML 1.0 DataType
+description: customer
+
+properties:
+  customerId?:
+    type: integer
+  firstName?:
+  lastName?:
+  phoneNumber:
+    type: integer
+  email?:
+    type: string
+    pattern: ^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$
+  deliveryAddress?:
+    type: string

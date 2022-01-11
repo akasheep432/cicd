@@ -1,0 +1,56 @@
+#%RAML 1.0
+title: Ecomm User System API
+version: v1
+protocols:
+  - HTTPS
+  - HTTP
+
+types:
+  CustomerOrderDetails:
+    type: !include datatype/customerDataType.raml
+    properties:
+      orderIDs?:
+        type: array
+      wishListID?:
+        type: integer
+  
+/customer:
+  post:
+    displayName: Create customer
+    body:
+     application/json:
+       type: !include datatype/customerDataType.raml
+       example: !include examples/customerExample.json
+    responses:
+      201:
+        body:
+          application/json:
+            example: !include examples/postCustomerResponse.json
+              
+  /{customerId}:
+    get:
+      displayName: Get customer
+      responses:
+        200:
+          body:
+            application/json:
+              type: CustomerOrderDetails
+              example: !include examples/getCustomerExample.json
+    put:
+       displayName: Edit customer
+       body:
+        application/json:
+         type:  !include datatype/customerDataType.raml
+         example: !include examples/customerExample.json
+       responses:
+        200:
+         body:
+          application/json:
+            example: !include examples/successResponse.json
+    delete:
+      displayName: delete customer
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include examples/successResponse.json

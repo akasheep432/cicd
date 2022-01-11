@@ -1,9 +1,0 @@
-{
-  "firstName": "John",
-  "lastName": "Doe",
-  "phoneNumber": 1234554,
-  "email": "john.qa@example.com",
-  "deliveryAddress":"44 Shirley Ave,West Chicago 60185,IL,USA",
-  "orderIDs" : [23,67,89],
-  "wishListID" : 90
-}
